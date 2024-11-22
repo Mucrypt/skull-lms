@@ -1,3 +1,6 @@
+
+import { Skeleton } from "@/components/ui/skeleton"
+
 import { initialSignInFormData, initialSignUpFormData } from "@/config";
 import { checkAuthService, loginService, registerService } from "@/services";
 import { createContext, useEffect, useState } from "react";
@@ -79,26 +82,30 @@ export default function AuthProvider({ children }) {
           user: null,
         });
       }
-    } catch (error) {
-      console.error("Error during auth check:", error);
-      setAuth({
-        authenticate: false,
-        user: null,
-      });
-    } finally {
-      setLoading(false); // Stop loading regardless of success or failure
+    }catch (error) {
+      console.log(error);
+      if (!error?.response?.data?.success) {
+        setAuth({
+          authenticate: false,
+          user: null,
+        });
+        setLoading(false);
+      }
     }
+  }
+
+  function resetCredentials() {
+    setAuth({
+      authenticate: false,
+      user: null,
+    });
   }
 
   useEffect(() => {
     checkAuthUser();
   }, []);
 
-  console.log("Auth context state:", auth);
 
-  if (loading) {
-    return <div>Loading...</div>; // Display loading state while checking auth
-  }
 
   return (
     <AuthContext.Provider
@@ -110,9 +117,12 @@ export default function AuthProvider({ children }) {
         handleRegisterUser,
         handleLoginUser,
         auth,
+        resetCredentials
       }}
     >
-      {children}
+      {loading ? <Skeleton /> :  children}
+
+      
     </AuthContext.Provider>
   );
 }
