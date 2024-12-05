@@ -1,12 +1,17 @@
 import { Outlet } from "react-router-dom";
+import StudentViewCommonHeader from "./header";
 
 function StudentViewCommonLayout() {
     return (
-        <div>
-            Student Common Layout
-            <Outlet />
+      <div>
+        <StudentViewCommonHeader />
+        <div className="pt-[80px]">
+          {/* Added padding to prevent overlap */}
+          <Outlet />
         </div>
-    )
-}
-
-export default StudentViewCommonLayout;
+      </div>
+    );
+  }
+  
+  export default StudentViewCommonLayout;
+  

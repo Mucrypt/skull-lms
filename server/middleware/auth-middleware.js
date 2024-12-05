@@ -1,3 +1,6 @@
+
+require('dotenv').config(); // Ensure this is included at the top
+
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (token, secretKey) => {
@@ -6,7 +9,6 @@ const verifyToken = (token, secretKey) => {
 
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  console.log(authHeader, "authHeader");
 
   if (!authHeader) {
     return res.status(401).json({
@@ -18,7 +20,7 @@ const authenticate = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const payload = verifyToken(token, "JWT_SECRET");
+    const payload = verifyToken(token, process.env.JWT_SECRET); // Use env secret
     req.user = payload;
     next();
   } catch (e) {
@@ -29,4 +31,6 @@ const authenticate = (req, res, next) => {
   }
 };
 
-module.exports = authenticate; // Ensure this line correctly exports the middleware
+module.exports = authenticate; 
+
+

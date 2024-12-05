@@ -3,19 +3,17 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import AuthProvider from "./context/auth-context/index.jsx";
-
-
+import InstructorProvider from "./context/instructor-context";
+import StudentProvider from "./context/student-context";
 
 createRoot(document.getElementById("root")).render(
-  
-  <BrowserRouter 
-  future={{
-    v7_startTransition: true, // Enable React.startTransition for state updates
-    v7_relativeSplatPath: true, // Update relative path resolution for splat routes
-  }}
-   >
+  <BrowserRouter>
     <AuthProvider>
-      <App />
+      <InstructorProvider>
+        <StudentProvider>
+        <App />
+        </StudentProvider>
+      </InstructorProvider>
     </AuthProvider>
   </BrowserRouter>
 );

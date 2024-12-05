@@ -8,6 +8,7 @@ import StudentViewCommonLayout from './components/student-view/common-layout'
 import StudentHomePage from './pages/student/home'
 import NotFoundPage from './pages/not-found'
 import AddNewCoursePage from './pages/instructor/add-new-course'
+import StudentViewCoursesPage from './pages/student/courses'
 
 
 
@@ -51,6 +52,16 @@ function App() {
         />
       }
      />
+      <Route 
+      path='/instructor/edit-course/:courseId'
+      element={
+        <RouteGuard 
+        element={<AddNewCoursePage />}
+        authenticated={auth?.authenticate}
+        user={auth?.user}
+        />
+      }
+     />
 
      <Route path='/' 
       element={
@@ -63,9 +74,10 @@ function App() {
         />
       }      
      >
-       
-       <Route path='home' element={<StudentHomePage/>} />
        <Route path='' element={<StudentHomePage/>} />
+       <Route path='home' element={<StudentHomePage/>} />
+       <Route path='courses' element={<StudentViewCoursesPage/>} />
+       
 
      </Route>
      <Route path="*" element={<NotFoundPage />} />

@@ -37,7 +37,7 @@ export default function AuthProvider({ children }) {
   async function handleLoginUser(event) {
     event.preventDefault();
     try {
-      console.log("Logging in user with data:", signInFormData); // Debug log
+      
       const data = await loginService(signInFormData);
       console.log("Login response:", data);
 
@@ -67,9 +67,9 @@ export default function AuthProvider({ children }) {
 
   async function checkAuthUser() {
     try {
-      console.log("Checking authenticated user...");
+      
       const data = await checkAuthService();
-      console.log("Auth check response:", data);
+     
 
       if (data.success) {
         setAuth({
