@@ -8,6 +8,7 @@ const LectureSchema = new mongoose.Schema({
   videoUrl: String,
   public_id: String,
   freePreview: Boolean,
+  duration: Number, // Add this to store duration of each lecture in hours
 });
 
 const CourseSchema = new mongoose.Schema({
@@ -24,6 +25,7 @@ const CourseSchema = new mongoose.Schema({
   welcomeMessage: String,
   pricing: Number,
   objectives: String,
+  totalDuration: Number, // Add this if you want to store it permanently
   students: [
     {
       studentId: String,

@@ -24,8 +24,10 @@ function StudentViewCommonHeader() {
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button onClick={() => navigate('/courses')}
-              className="text-gray-700 text-sm md:text-base font-medium hover:text-indigo-600">
+          <Button variant="outline" onClick={() => navigate('/courses')}
+              
+              className=" text-sm md:text-base font-medium">
+                
                Explore Courses
           </Button>
           <Link
@@ -42,7 +44,7 @@ function StudentViewCommonHeader() {
       <div className="flex items-center space-x-4">
         <Button
           onClick={handleLogout}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm md:text-base font-medium px-4 py-2 rounded-md"
+          className=" text-white text-sm md:text-base font-medium px-4 py-2 rounded-md"
         >
           Sign Out
         </Button>
