@@ -11,4 +11,5 @@ function RouteGuard({authenticated, user, element}) {
         && location.pathname.includes('/admin')  ) {
             
         }
+    return element
 }

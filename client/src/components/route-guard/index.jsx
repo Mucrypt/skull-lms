@@ -1,4 +1,3 @@
-//client/src/components/route-guard/index.jsx
 import { Navigate, useLocation } from "react-router-dom";
 import { Fragment } from "react";
 
@@ -20,16 +19,13 @@ function RouteGuard({ authenticated, user, element }) {
     return <Navigate to="/home" />;
   }
 
-  
   if (
     authenticated &&
-    user.role === "instructor" &&
+    user?.role === "instructor" &&
     !location.pathname.includes("instructor")
   ) {
     return <Navigate to="/instructor" />;
   }
-    
-    
 
   return <Fragment>{element}</Fragment>;
 }

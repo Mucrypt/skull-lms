@@ -1,6 +1,3 @@
-
-require('dotenv').config(); // Ensure this is included at the top
-
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (token, secretKey) => {
@@ -9,6 +6,7 @@ const verifyToken = (token, secretKey) => {
 
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
+
 
   if (!authHeader) {
     return res.status(401).json({
@@ -20,17 +18,17 @@ const authenticate = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const payload = verifyToken(token, process.env.JWT_SECRET); // Use env secret
+    const payload = verifyToken(token, "JWT_SECRET");
+
     req.user = payload;
+
     next();
   } catch (e) {
     return res.status(401).json({
       success: false,
-      message: "Invalid token",
+      message: "invalid token",
     });
   }
 };
 
-module.exports = authenticate; 
-
-
+module.exports = authenticate;

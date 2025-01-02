@@ -1,6 +1,4 @@
-
-import { Skeleton } from "@/components/ui/skeleton"
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { initialSignInFormData, initialSignUpFormData } from "@/config";
 import { checkAuthService, loginService, registerService } from "@/services";
 import { createContext, useEffect, useState } from "react";
@@ -14,98 +12,87 @@ export default function AuthProvider({ children }) {
     authenticate: false,
     user: null,
   });
-  const [loading, setLoading] = useState(true); // Handles loading state
+  const [loading, setLoading] = useState(true);
+
+  // Helper function to set authentication state
+  const setAuthState = (authenticate, user) => {
+    setAuth({ authenticate, user });
+    localStorage.setItem("authState", JSON.stringify({ authenticate, user }));
+  };
+
+  // Helper function for error feedback
+  const showError = (message) => {
+    console.error(message);
+    // Optional: Trigger a toast or alert for the user
+  };
 
   async function handleRegisterUser(event) {
     event.preventDefault();
     try {
-      console.log("Registering user with data:", signUpFormData); // Debug log
       const data = await registerService(signUpFormData);
-      console.log("Registration successful:", data);
-
       if (data.success) {
-        setAuth({
-          authenticate: true,
-          user: data.data.user,
-        });
+        setAuthState(true, data.data.user);
+      } else {
+        showError(data.message || "Registration failed.");
+        setAuthState(false, null);
       }
     } catch (error) {
-      console.error("Error during registration:", error);
+      showError(error.message || "An unexpected error occurred during registration.");
     }
   }
 
   async function handleLoginUser(event) {
     event.preventDefault();
     try {
-      
       const data = await loginService(signInFormData);
-      console.log("Login response:", data);
-
       if (data.success) {
-        sessionStorage.setItem(
-          "accessToken",
-          JSON.stringify(data.data.accessToken)
-        );
-        setAuth({
-          authenticate: true,
-          user: data.data.user,
-        });
+        localStorage.setItem("accessToken", JSON.stringify(data.data.accessToken));
+        setAuthState(true, data.data.user);
       } else {
-        setAuth({
-          authenticate: false,
-          user: null,
-        });
+        showError(data.message || "Login failed.");
+        setAuthState(false, null);
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      setAuth({
-        authenticate: false,
-        user: null,
-      });
+      showError(error.message || "An unexpected error occurred during login.");
     }
   }
 
   async function checkAuthUser() {
     try {
-      
+      const token = JSON.parse(localStorage.getItem("accessToken"));
+      if (!token) {
+        console.warn("No token found in localStorage.");
+        setAuthState(false, null);
+        return;
+      }
       const data = await checkAuthService();
-     
-
       if (data.success) {
-        setAuth({
-          authenticate: true,
-          user: data.data.user,
-        });
+        setAuthState(true, data.data.user);
       } else {
-        setAuth({
-          authenticate: false,
-          user: null,
-        });
+        console.warn("Invalid or expired token.");
+        resetCredentials(); // Clear credentials if token is invalid
       }
-    }catch (error) {
-      console.log(error);
-      if (!error?.response?.data?.success) {
-        setAuth({
-          authenticate: false,
-          user: null,
-        });
-        setLoading(false);
-      }
+    } catch (error) {
+      showError(error.message || "Error verifying authentication.");
+      resetCredentials();
+    } finally {
+      setLoading(false);
     }
   }
 
   function resetCredentials() {
-    setAuth({
-      authenticate: false,
-      user: null,
-    });
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("authState");
+    setAuthState(false, null);
   }
 
   useEffect(() => {
+    const storedAuthState = JSON.parse(localStorage.getItem("authState"));
+    if (storedAuthState) {
+      setAuth(storedAuthState);
+    }
     checkAuthUser();
   }, []);
-
-
 
   return (
     <AuthContext.Provider
@@ -117,12 +104,10 @@ export default function AuthProvider({ children }) {
         handleRegisterUser,
         handleLoginUser,
         auth,
-        resetCredentials
+        resetCredentials,
       }}
     >
-      {loading ? <Skeleton /> :  children}
-
-      
+      {loading ? <Skeleton /> : children}
     </AuthContext.Provider>
   );
 }

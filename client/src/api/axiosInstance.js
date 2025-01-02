@@ -1,4 +1,3 @@
-//client/src/api/axiosInstance.js
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -7,7 +6,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = JSON.parse(sessionStorage.getItem("accessToken")) || "";
+    const accessToken = JSON.parse(localStorage.getItem("accessToken")) || "";
 
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -17,7 +16,5 @@ axiosInstance.interceptors.request.use(
   },
   (err) => Promise.reject(err)
 );
-
-
 
 export default axiosInstance;

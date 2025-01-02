@@ -1,8 +1,11 @@
+//CLIENT/src/PAGES/STUDENT/COURSE-DETAILS/INDEX.JSX
+
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import VideoPlayer from '@/components/video-player';
 import { StudentContext } from '@/context/student-context';
-import { fetchStudentViewCourseDetailsService } from '@/services';
+import {  fetchStudentViewCourseDetailsService, createStripeOrderService  } from '@/services';
 import { CheckCircle, Globe, Lock, PlayCircle } from 'lucide-react';
 import { useContext, useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
@@ -14,11 +17,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { AuthContext } from '@/context/auth-context';
 
 function StudentViewCourseDetailsPage() {
   const [displayCurrentVideoFreePreview, setDisplayCurrentVideoFreePreview] =
     useState(null);
   const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
+  const [approvalUrl, setApprovalUrl] = useState("");
+
+  const {auth} = useContext(AuthContext)
 
   const {
     studentViewCourseDetails,
@@ -27,8 +34,26 @@ function StudentViewCourseDetailsPage() {
     setCurrentCourseDetailsId,
   } = useContext(StudentContext);
 
+  const { id } = useParams();
+  const location = useLocation();
+
+
   async function fetchStudentViewCourseDetails() {
     try {
+       // const checkCoursePurchaseInfoResponse =
+    //   await checkCoursePurchaseInfoService(
+    //     currentCourseDetailsId,
+    //     auth?.user._id
+    //   );
+
+    // if (
+    //   checkCoursePurchaseInfoResponse?.success &&
+    //   checkCoursePurchaseInfoResponse?.data
+    // ) {
+    //   navigate(`/course-progress/${currentCourseDetailsId}`);
+    //   return;
+    // }
+
       const response = await fetchStudentViewCourseDetailsService(
         currentCourseDetailsId
       );
@@ -45,11 +70,45 @@ function StudentViewCourseDetailsPage() {
 
   function handleSetFreePreview(getCurrentVideoInfo) {
     console.log(getCurrentVideoInfo);
-    setDisplayCurrentVideoFreePreview(getCurrentVideoInfo?.videoUrl);
-  }
+      setDisplayCurrentVideoFreePreview(getCurrentVideoInfo?.videoUrl);
+    }
 
-  const { id } = useParams();
-  const location = useLocation();
+
+  async function handleStripeCheckout() {
+    try {
+      const formData = {
+        userId: auth?.user?._id,
+        userName: auth?.user?.userName,
+        userEmail: auth?.user?.userEmail,
+        orderStatus: 'pending',
+        paymentMethod: 'stripe',
+        paymentStatus: 'initiated',
+        orderDate: new Date(),
+        instructorId: studentViewCourseDetails?.instructorId,
+        instructorName: studentViewCourseDetails?.instructorName,
+        courseImage: studentViewCourseDetails?.image,
+        courseTitle: studentViewCourseDetails?.title,
+        courseId: studentViewCourseDetails?._id,
+        coursePricing: studentViewCourseDetails?.pricing,
+      };
+  
+      const response = await createStripeOrderService(formData);
+  
+      if (response.success) {
+        window.location.href = response.sessionUrl;
+      } else {
+        console.error('Error creating Stripe session:', response.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+
+
+ 
+
+
 
   useEffect(() => {
     if (!location.pathname.includes('course-details')) {
@@ -72,6 +131,8 @@ function StudentViewCourseDetailsPage() {
       setCurrentCourseDetailsId(id);
     }
   }, [id]);
+
+
 
   const getIndexOfFreePreviewUrl =
     studentViewCourseDetails?.curriculum?.findIndex(
@@ -126,7 +187,7 @@ function StudentViewCourseDetailsPage() {
             </CardContent>
           </Card>
 
-          {/* Course Description */}
+        
           <Card className='mb-8'>
             <CardHeader>
               <CardTitle className='font-bold text-xl'>Description</CardTitle>
@@ -139,7 +200,7 @@ function StudentViewCourseDetailsPage() {
             </CardContent>
           </Card>
 
-          {/* Course Curriculum */}
+          
           <Card className='mb-8'>
             <CardHeader>
               <CardTitle className='font-bold text-xl'>
@@ -200,7 +261,12 @@ function StudentViewCourseDetailsPage() {
                 </span>
               </div>
 
-              <Button className='w-full'>Buy Now</Button>
+             
+              <div className='flex flex-col gap-2' >
+             
+              <Button onClick={handleStripeCheckout}
+              className='w-full bg-green-700' >Checkout</Button>
+              </div>
             </CardContent>
           </Card>
         </aside>
@@ -228,6 +294,7 @@ function StudentViewCourseDetailsPage() {
              ?.filter((item) => item.freePreview)
              .map((filteredItem) => (
                <p
+                  key={filteredItem?._id}
                  onClick={() => handleSetFreePreview(filteredItem)}
                  className="cursor-pointer text-[16px] font-medium"
                >
@@ -250,3 +317,5 @@ function StudentViewCourseDetailsPage() {
 }
 
 export default StudentViewCourseDetailsPage;
+
+

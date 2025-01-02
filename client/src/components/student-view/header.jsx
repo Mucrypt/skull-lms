@@ -24,14 +24,20 @@ function StudentViewCommonHeader() {
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="outline" onClick={() => navigate('/courses')}
-              
-              className=" text-sm md:text-base font-medium">
-                
-               Explore Courses
+
+          <Button
+            variant="outline"
+            onClick={() => {
+              location.pathname.includes("/courses")
+                ? null
+                : navigate("/courses");
+            }}
+            className=" text-sm md:text-base font-medium"
+          >
+            Explore Courses
           </Button>
           <Link
-            to="/my-courses"
+            to="/student-courses"
             className="text-gray-700 text-sm md:text-base font-medium hover:text-indigo-600 flex items-center space-x-1"
           >
             <TvMinimalPlay className="w-6 h-6 text-gray-500" />

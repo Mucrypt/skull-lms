@@ -25,6 +25,7 @@ export async function checkAuthService() {
 
 
 
+
 export async function mediaUploadService(formData, onProgressCallback) {
   const { data } = await axiosInstance.post("/media/upload", formData, {
     onUploadProgress: (progressEvent) => {
@@ -91,6 +92,15 @@ export async function mediaBulkUploadService(formData, onProgressCallback) {
 }
 
 
+//client/src/services/index.js
+export async function checkCoursePurchaseInfoService(courseId, studentId) {
+  const { data } = await axiosInstance.get(
+    `/student/course/purchase-info/${courseId}/${studentId}`
+  );
+
+  return data;
+}
+
 
 //
 
@@ -110,6 +120,74 @@ export async function fetchStudentViewCourseListService(queryItem) {
 export async function fetchStudentViewCourseDetailsService(courseId) {
   const { data } = await axiosInstance.get(
     `/student/course/get/details/${courseId}`
+  );
+
+  return data;
+}
+
+
+
+//client/src/services/index.js
+export async function createStripeOrderService(formData) {
+  const { data } = await axiosInstance.post(`/student/order/checkout`, formData);
+
+  return data;
+}
+
+
+
+//client/src/services/index.js
+export async function finalizeStripePaymentService(sessionId) {
+  try {
+    const { data } = await axiosInstance.post(`/student/order/finalize-stripe-payment`, {
+      sessionId,
+    });
+    return data;
+  } catch (error) {
+    console.error('Error during Stripe payment finalization:', error.response?.data || error.message);
+    throw error; // Throw the error to handle it in the caller
+  }
+}
+
+
+//client/src/services/index.js
+export async function fetchStudentBoughtCoursesService(studentId) {
+  const { data } = await axiosInstance.get(
+    `/student/courses-bought/get/${studentId}`
+  );
+
+  return data;
+}
+
+export async function getCurrentCourseProgressService(userId, courseId) {
+  const { data } = await axiosInstance.get(
+    `/student/course-progress/get/${userId}/${courseId}`
+  );
+
+  return data;
+}
+
+
+export async function markLectureAsViewedService(userId, courseId, lectureId) {
+  const { data } = await axiosInstance.post(
+    `/student/course-progress/mark-lecture-viewed`,
+    {
+      userId,
+      courseId,
+      lectureId,
+    }
+  );
+
+  return data;
+}
+
+export async function resetCourseProgressService(userId, courseId) {
+  const { data } = await axiosInstance.post(
+    `/student/course-progress/reset-progress`,
+    {
+      userId,
+      courseId,
+    }
   );
 
   return data;
