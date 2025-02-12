@@ -1,6 +1,7 @@
 const Course = require("../../models/Course-Model");
 const StudentCourses = require("../../models/StudentCourses");
 
+
 // Get a list of all student-viewable courses
 const getAllStudentViewCourses = async (req, res) => {
   try {
@@ -123,7 +124,7 @@ const checkCoursePurchaseInfo = async (req, res) => {
 
     const ifStudentAlreadyBoughtCurrentCourse =
       studentCourses.courses.findIndex((item) => item.courseId === id) > -1;
-    console.log("ifStudentAlreadyBoughtCurrentCourse", ifStudentAlreadyBoughtCurrentCourse);
+
 
     res.status(200).json({
       success: true,
@@ -156,7 +157,7 @@ const getCoursesByStudentId = async (req, res) => {
       userId: studentId,
     });
 
-    console.log("studentBoughtCourses", studentBoughtCourses);
+   
 
     // Handle the case where no courses are found for the student
     if (!studentBoughtCourses) {

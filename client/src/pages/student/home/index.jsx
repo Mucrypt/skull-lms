@@ -38,9 +38,7 @@ function StudentHomePage() {
             <a href="#" className="text-indigo-600 hover:underline font-medium text-base">
               Discover Courses
             </a>
-            <a href="#" className="text-indigo-600 hover:underline font-medium text-base">
-              Learn More
-            </a>
+           
           </div>
         </div>
         <div className="lg:w-1/2 mt-8 lg:mt-0">
